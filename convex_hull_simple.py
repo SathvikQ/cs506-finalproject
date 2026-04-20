@@ -15,6 +15,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, Iterator, List, Mapping, Optional, Sequence, Set, Tuple
 from test_points import get_points
+from graph_points import plot_points_and_hull
+import matplotlib.pyplot as plt
+import numpy as np
 
 # ---------------------------------------------------------------------------
 # Geometry primitives
@@ -193,6 +196,12 @@ class DynamicConvexHull:
         """``(id, x, y)`` for each hull vertex, CCW."""
         return [(pid, self._points[pid].x, self._points[pid].y) for pid in self.hull_vertex_ids()]
 
+    '''
+        def hull_points(self) -> List[Tuple[str, float, float]]:
+        """``(id, x, y)`` for each point, whether or not in the hull."""
+            return [(pid, self._points[pid].x, self._points[pid].y) for pid in self._points.keys()]
+    '''
+
     def area(self) -> float:
         """Polygon area of the hull; 0 if fewer than 3 vertices."""
         verts = self.hull_vertices()
@@ -249,12 +258,17 @@ def batch_move(hull: DynamicConvexHull, moves: Mapping[str, Tuple[float, float]]
     hull.apply_moves(moves)
 
 
-points = list(
-    map(
-        lambda p: MutablePoint(p[0], p[1]),
-         get_points(1000)
-    ))
-hull = DynamicConvexHull()
-for i, p in enumerate(points):
-    hull.add_point(str(i), p.x, p.y)
-print(hull.hull_vertices())
+if __name__ == "__main__":
+    sample = get_points(1000)
+    points = [MutablePoint(float(row[0]), float(row[1])) for row in sample]
+
+    dyn = DynamicConvexHull()
+    for i, p in enumerate(points):
+        dyn.add_point(str(i), p.x, p.y)
+
+    # Coordinates for plotting: (n, 2), not ``np.array(dict)`` (that becomes a 0-d object array).
+    pts = np.array([dyn.get_point(str(i)) for i in range(len(points))])
+    hull_xy = np.array([(x, y) for _, x, y in dyn.hull_vertices()])
+
+    plot_points_and_hull(pts, hull_xy, title="Convex hull")
+    plt.show()
