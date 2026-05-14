@@ -775,7 +775,7 @@ def print_n_sweep(sweep: dict):
     print("=" * 90)
     print()
     print(f"  Log-log fit:  C ≈ {k:.4f} · e^{alpha:.3f}   (R² = {r2:.4f})")
-    print(f"  → Suggested formula:  α = 1 - k · v·Δt / (d · e^{1+alpha:.3f})")
+    print(f"  → Suggested formula:  α = 1 - k · v·Δt / (d · e^{1-alpha:.3f})")
     print(f"    where k ≈ {k:.4f}")
     print()
     print("  Interpretation guide (based on fitted exponent):")
